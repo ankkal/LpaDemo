@@ -83,18 +83,13 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
         }
         mProfileText = (TextView) findViewById(R.id.profile_info);
         mLogoutTextView = (TextView) findViewById(R.id.logout);
-        if (SampleApplication.getCustomer() == null) {
-            Button nativeCheckoutButton = (Button) findViewById(R.id.ShopifyStore);
+        Button nativeCheckoutButton = (Button) findViewById(R.id.ShopifyStore);
             nativeCheckoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onNativeCheckoutButtonClicked();
                 }
             });
-        } else {
-            //menu.removeItem(R.id.action_login);
-        }
-
         //createCustomer("ankit81008@gmail.com", "pass1234", "Ankit", "kala");
         String logoutText = getString(R.string.logout);
         SpannableString underlinedLogoutText = new SpannableString(logoutText);
@@ -317,7 +312,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
             profileBuilder.append(String.format("Your email is %s\n", profileBundle.getString(AuthzConstants.PROFILE_KEY.EMAIL.val)));
             final String profile = profileBuilder.toString();
             Log.d("Test", "Profile Response: " + profile);
-            loginCustomerWithCallback(email,"pass1234");
+            loginCustomerWithCallback(email,"pass1234",name,account);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -339,7 +334,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
     private void updateProfileView(String profileInfo) {
         Log.d("Inside profile", "Updating profile view");
         mProfileText.setText(profileInfo);
-        showLoadingDialog(R.string.loading_data);
+       // showLoadingDialog(R.string.loading_data);
 //        Intent intent = new Intent("com.shopify.sample.activity.CollectionListActivity");
 
         // mLoginButton.setVisibility(Button.GONE);
@@ -451,7 +446,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
         Log.d("Inside create", "Start");
         // Create credential items with email, first name, last name,
         // password and password confirmation
-        final AccountCredentials accountCredentials = new AccountCredentials(email, "password123", "afirstname", "alastname");
+        final AccountCredentials accountCredentials = new AccountCredentials(email, "password123",firstName , lastName);
 
         // The customer will be retrieved automatically if the sign up was successful
         SampleApplication.getBuyClient().createCustomer(accountCredentials, new Callback<Customer>() {
@@ -459,7 +454,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
             public void success(Customer customer) {
                 // save the customer or token for later use
                 Log.d("createCustomer succ", "created");
-
+                onFetchCustomerSuccess(customer);
             }
 
             @Override
@@ -470,7 +465,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
         });
 
 }
-    public void loginCustomerWithCallback(final String email, final String password) {
+    public void loginCustomerWithCallback(final String email, final String password,final String name,final String accountId) {
         // Create credential items with email and password
         final AccountCredentials accountCredentials = new AccountCredentials(email, "password123");
 
@@ -486,7 +481,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
             public void failure(BuyClientError error) {
                 // handle error
                 Log.d("login err", error.toString());
-                createCustomer(email, "password123", "Test", "Test");
+                createCustomer(email, "password123", name, accountId);
             }
         });
 

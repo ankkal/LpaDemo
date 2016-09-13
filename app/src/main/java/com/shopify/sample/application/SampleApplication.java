@@ -214,7 +214,19 @@ public class SampleApplication extends Application {
         if (customer != null && customer.getDefaultAddress() != null) {
             checkout.setShippingAddress(customer.getDefaultAddress());
             checkout.setBillingAddress(customer.getDefaultAddress());
-        } else {
+        } else if (customer != null){
+            final Address address = new Address();
+            address.setFirstName(customer.getFirstName());
+            address.setLastName(customer.getLastName());
+            address.setAddress1("421 8th Ave");
+            address.setCity("Bangalore");
+            address.setProvinceCode("NY");
+            address.setZip("10001");
+            address.setCountryCode("US");
+            checkout.setShippingAddress(address);
+            checkout.setBillingAddress(address);
+        }
+        else {
             final Address address = new Address();
             address.setFirstName("Dinosaur");
             address.setLastName("Banana");

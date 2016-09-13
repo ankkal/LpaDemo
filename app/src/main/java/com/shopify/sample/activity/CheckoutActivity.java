@@ -39,11 +39,11 @@ import com.example.android.lpademo.R;
 import com.shopify.buy.dataprovider.BuyClientError;
 import com.shopify.buy.dataprovider.Callback;
 import com.shopify.buy.model.Checkout;
-import com.shopify.buy.model.CreditCard;
-import com.shopify.buy.model.PaymentToken;
 import com.shopify.sample.activity.base.SampleActivity;
 
 import org.json.JSONObject;
+
+import java.text.DecimalFormat;
 
 
 /**
@@ -219,7 +219,11 @@ public class CheckoutActivity extends SampleActivity {
             );
             final Checkout checkout = getSampleApplication().getCheckout();
 
-            options.put("amount", "100");
+            DecimalFormat decimalFormat = new DecimalFormat(".");
+            decimalFormat.setGroupingUsed(false);
+            decimalFormat.setDecimalSeparatorAlwaysShown(false);
+            String amount=decimalFormat.format(Double.valueOf(checkout.getPaymentDue())*100) ;
+            options.put("amount", amount);
             options.put("name", "Razorpay Corp");
             options.put("prefill", new JSONObject("{email: 'sm@razorpay.com', contact: '9876543210'}"));
             Log.d("RZP Json is", options.toString());
