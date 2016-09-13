@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.android.lpademo.LoginActivity">
+
+<LinearLayout android:id="@+id/email_login_form"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical">
+    <FrameLayout
+        android:id="@+id/discount_button_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:background="@color/discount_button">
+
+        <Button
+            android:id="@+id/ShopifyStore"
+            style="@style/Button"
+            android:text="@string/Shop"/>
+    </FrameLayout>
+
+    <com.facebook.login.widget.LoginButton
+    android:id="@+id/facebook_sign_in_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:layout_marginBottom="10dp"
+    android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/profile_info"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:text="@string/default_message"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:layout_gravity="center"/>
+</LinearLayout>
+    <ImageButton android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/login_with_amazon"
+        android:src="@drawable/btnlwa_gold_loginwithamazon"
+        android:background="@android:color/transparent"
+        android:padding="0dp"
+        android:contentDescription="@string/login_button_content_description"/>
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/logout"
+        android:text="@string/logout"
+        android:visibility="visible"
+        android:clickable="true"
+        android:textColor="@color/logout_text_color_state"
+        android:paddingBottom="10dp"
+        android:layout_gravity="right"
+        android:layout_above="@+id/login_with_amazon"
+        android:layout_alignRight="@+id/login_with_amazon"
+        android:layout_alignEnd="@+id/login_with_amazon" />
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_marginTop="50dp"
+        android:textColor="#ffffff"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+
+    <com.google.android.gms.common.SignInButton
+        android:layout_centerInParent="true"
+        android:id="@+id/sign_in_button"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_logout"
+        android:text="Log out"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="22dp"
+        android:layout_below="@+id/sign_in_button"
+        android:layout_toLeftOf="@+id/logout"
+        android:layout_toStartOf="@+id/logout" />
+</RelativeLayout>

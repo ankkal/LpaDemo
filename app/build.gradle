@@ -1,0 +1,86 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+    }
+    compileSdkVersion 24
+    buildToolsVersion "23.0.3"
+    defaultConfig {
+        applicationId "com.example.android.lpademo"
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+        }
+        all{
+            buildConfigField 'okhttp3.logging.HttpLoggingInterceptor.Level', 'OKHTTP_LOG_LEVEL', 'okhttp3.logging.HttpLoggingInterceptor.Level.BODY'
+
+            // We pull the shop settings either from the Environment or a file called shop.properties at the root of the project.
+            // Environment variables will take precedence, we will attempt to read those first.
+            def shopDomain
+            def apiKey
+            def appId
+            def androidPayPublicKey
+
+            // get the shop setting from the environment if there any
+            shopDomain = System.getenv("SHOP_DOMAIN")
+            apiKey = System.getenv("API_KEY")
+            appId = System.getenv("APP_ID")
+            androidPayPublicKey = System.getenv("ANDROID_PAY_PUBLIC_KEY")
+
+            // pull the store properties from the local file if it exists.  Environment variables take precedence
+            def shopProperties = new Properties();
+            File shopPropertiesFile = project.file('shop.properties')
+
+            if (shopPropertiesFile.exists()) {
+                shopProperties.load(new FileInputStream(shopPropertiesFile))
+                shopDomain = shopDomain ?: shopProperties["SHOP_DOMAIN"]
+                apiKey = apiKey ?: shopProperties["API_KEY"]
+                appId = appId ?: shopProperties["APP_ID"]
+                androidPayPublicKey = androidPayPublicKey ?: shopProperties["ANDROID_PAY_PUBLIC_KEY"]
+            }
+
+            if (!shopDomain) {
+                shopDomain = ""
+            }
+            if (!apiKey) {
+                apiKey = ""
+            }
+            if (!appId) {
+                appId = ""
+            }
+            if (!androidPayPublicKey) {
+                androidPayPublicKey = ""
+            }
+
+            buildConfigField "String", "SHOP_DOMAIN", "\"" + shopDomain.toString() + "\""
+            buildConfigField "String", "API_KEY", "\"" + apiKey.toString() + "\""
+            buildConfigField "String", "APP_ID", "\"" + appId.toString() + "\""
+            buildConfigField "String", "ANDROID_PAY_PUBLIC_KEY",  "\"" + androidPayPublicKey.toString() + "\""
+            buildConfigField "boolean", "USE_RX_API", "false"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.android.support:design:24.1.1'
+    compile 'com.google.android.gms:play-services-auth:8.4.0'
+    compile 'com.shopify.mobilebuysdk:buy:2.0.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.jakewharton:butterknife:8.0.1'
+    compile files('login-with-amazon-sdk.jar')
+    compile files('razorpay-android-0.13.0.jar')
+    compile project(':razorpay-android-0.13.0')
+}
+

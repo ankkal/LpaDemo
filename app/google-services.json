@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "32391081051",
+    "project_id": "lpa-demo"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32391081051:android:fa3884bda17dd501",
+        "android_client_info": {
+          "package_name": "com.example.android.lpademo.LoginActivity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "32391081051-vlgk6ibm6l198e4302dr4tod7q08gbrl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.lpademo.LoginActivity",
+            "certificate_hash": "78FB7616455550A066A5D1AF749BDF7D30BA0E07"
+          }
+        },
+        {
+          "client_id": "32391081051-jhd7vh6t4trmqq7ks10b9a26elj6p2kg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2rQyYNiNLWMTE-USlOhHbT74gMvDi7bs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
