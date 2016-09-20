@@ -39,6 +39,8 @@ import com.example.android.lpademo.R;
 import com.shopify.buy.dataprovider.BuyClientError;
 import com.shopify.buy.dataprovider.Callback;
 import com.shopify.buy.model.Checkout;
+import com.shopify.buy.model.CreditCard;
+import com.shopify.buy.model.PaymentToken;
 import com.shopify.sample.activity.base.SampleActivity;
 
 import org.json.JSONObject;
@@ -75,6 +77,7 @@ public class CheckoutActivity extends SampleActivity {
             nativeCheckoutButton.setVisibility(View.GONE);
         }
 
+/*
         Button webCheckoutButton = (Button) findViewById(R.id.web_checkout_button);
         if (didCreateCheckout) {
             webCheckoutButton.setVisibility(View.VISIBLE);
@@ -95,6 +98,7 @@ public class CheckoutActivity extends SampleActivity {
                 onCartPermalinkClicked();
             }
         });
+*/
 
         Button razorPayButton = (Button) findViewById(R.id.razorpay_button);
         razorPayButton.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +115,7 @@ public class CheckoutActivity extends SampleActivity {
      * For our sample native checkout, we use a hardcoded credit card.
      */
     private void onNativeCheckoutButtonClicked() {
-        getSampleApplication().completeCheckout(new Callback<Checkout>() {
+/*        getSampleApplication().completeCheckout(new Callback<Checkout>() {
             @Override
             public void success(Checkout checkout) {
                 onCheckoutComplete();
@@ -121,9 +125,9 @@ public class CheckoutActivity extends SampleActivity {
             public void failure(BuyClientError error) {
                 onError(error);
             }
-        });
+        });*/
         // Create the card to send to Shopify.  This is hardcoded here for simplicity, but the user should be prompted for their credit card information.
-        /*final CreditCard creditCard = new CreditCard();
+        final CreditCard creditCard = new CreditCard();
         creditCard.setFirstName("Dinosaur");
         creditCard.setLastName("Banana");
         creditCard.setMonth("2");
@@ -135,20 +139,20 @@ public class CheckoutActivity extends SampleActivity {
         getSampleApplication().storeCreditCard(creditCard, new Callback<PaymentToken>() {
             @Override
             public void success(PaymentToken paymentToken) {
-                //onCreditCardStored();
+                onCreditCardStored();
             }
 
             @Override
             public void failure(BuyClientError error) {
                 onError(error);
             }
-        });*/
+        });
     }
 
     /**
      * When the credit card has successfully been added, complete the checkout and begin polling.
      */
-    /*private void onCreditCardStored() {
+    private void onCreditCardStored() {
         getSampleApplication().completeCheckout(new Callback<Checkout>() {
             @Override
             public void success(Checkout checkout) {
@@ -161,7 +165,7 @@ public class CheckoutActivity extends SampleActivity {
             }
         });
     }
-*/
+
     /**
      * Launch the device browser so the user can complete the checkout.
      */
@@ -242,9 +246,21 @@ public class CheckoutActivity extends SampleActivity {
      */
     public void onPaymentSuccess(String razorpayPaymentID){
         try {
+       /*     getSampleApplication().completeCheckout(razorpayPaymentID,new Callback<Checkout>() {
+                                                        @Override
+                                                        public void success(Checkout checkout) {
+                                                            onCheckoutComplete();
+                                                        }
+
+                                                        @Override
+                                                        public void failure(BuyClientError error) {
+                                                            onError(error);
+                                                        }
+                                                    });*/
 
             findViewById(R.id.discount_row).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.discount_value)).setText(razorpayPaymentID);
+            ((TextView) findViewById(R.id.razorpayPaymentID)).setText(razorpayPaymentID);
+            ((TextView) findViewById(R.id.razorpayPaymentStatus)).setText("Success");
             Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
         }
         catch (Exception e){
@@ -259,6 +275,7 @@ public class CheckoutActivity extends SampleActivity {
      */
     public void onPaymentError(int code, String response){
         try {
+            ((TextView) findViewById(R.id.razorpayPaymentStatus)).setText("Failed");
             Toast.makeText(this, "Payment failed: " + Integer.toString(code) + " " + response, Toast.LENGTH_SHORT).show();
         }
         catch (Exception e){

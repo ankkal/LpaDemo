@@ -345,6 +345,10 @@ public class SampleApplication extends Application {
         buyClient.completeCheckout(paymentToken, checkout.getToken(), wrapCheckoutCallback(callback));
     }
 
+    public void completeCheckout(String RazorId, final Callback<Checkout> callback) {
+        paymentToken = PaymentToken.createCreditCardPaymentToken(RazorId);
+        buyClient.completeCheckout(paymentToken, checkout.getToken(), wrapCheckoutCallback(callback));
+    }
     public void completeCheckout(FullWallet fullWallet, final Callback<Checkout> callback) {
         paymentToken = AndroidPayHelper.getAndroidPaymentToken(fullWallet, BuildConfig.ANDROID_PAY_PUBLIC_KEY);
         buyClient.completeCheckout(paymentToken, checkout.getToken(), wrapCheckoutCallback(callback));

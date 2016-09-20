@@ -449,7 +449,8 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
         final AccountCredentials accountCredentials = new AccountCredentials(email, "password123",firstName , lastName);
 
         // The customer will be retrieved automatically if the sign up was successful
-        SampleApplication.getBuyClient().createCustomer(accountCredentials, new Callback<Customer>() {
+        SampleApplication
+                .getBuyClient().createCustomer(accountCredentials, new Callback<Customer>() {
             @Override
             public void success(Customer customer) {
                 // save the customer or token for later use
@@ -457,7 +458,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
                 onFetchCustomerSuccess(customer);
             }
 
-            @Override
+             @Override
             public void failure(BuyClientError error) {
                 // handle error
                 Log.d("createCustomer fail", error.toString());

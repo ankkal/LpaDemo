@@ -110,18 +110,18 @@ public final class CustomerOrderListViewPresenter extends BaseViewPresenter<Cust
         fetchOrderListTask = SampleApplication.getBuyClient().getOrders(new Callback<List<Order>>() {
             @Override
             public void success(final List<Order> orders) {
-                final CustomerOrderListViewPresenter presenter = presenterRef.get();
-                if (presenter != null) {
-                    presenter.onFetchCustomerOrders(orders);
-                }
+                //final CustomerOrderListViewPresenter presenter = presenterRef.get();
+                //if (presenter != null) {
+                  //  presenter.onFetchCustomerOrders(orders);
+                //}
             }
 
             @Override
             public void failure(final BuyClientError error) {
-                final CustomerOrderListViewPresenter presenter = presenterRef.get();
+               /* final CustomerOrderListViewPresenter presenter = presenterRef.get();
                 if (presenter != null) {
                     presenter.onRequestError(error);
-                }
+                }*/
             }
         });
     }

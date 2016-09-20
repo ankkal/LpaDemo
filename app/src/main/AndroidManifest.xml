@@ -58,6 +58,7 @@
         <activity android:name="com.shopify.sample.activity.DiscountActivity"/>
         <activity android:name="com.shopify.sample.activity.ShippingRateListActivity"/>
         <activity android:name="com.shopify.sample.activity.CheckoutActivity"/>
+        <activity android:name="com.shopify.sample.activity.ProfileActivity"/>
         <activity android:name="com.razorpay.CheckoutActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize"/>
         <activity
             android:name="com.shopify.sample.ui.ProductDetailsActivity"

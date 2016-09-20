@@ -200,6 +200,25 @@ public class SampleActivity extends FragmentActivity {
         }
     }
 
+    protected void updateProfileSummary() {
+        if (SampleApplication.getCustomer() == null) {
+
+            ((TextView) findViewById(R.id.profileData)).setText("Please Login ");
+
+            return;
+        } else {
+
+            StringBuilder profileBuilder = new StringBuilder();
+            profileBuilder.append(String.format("Welcome, %s!\n", SampleApplication.getCustomer().getFirstName()));
+            profileBuilder.append(String.format("Your email is %s\n", SampleApplication.getCustomer().getEmail()));
+            final String profile = profileBuilder.toString();
+            ((TextView) findViewById(R.id.profileData)).setText(profile);
+
+        }
+
+
+    }
+
     /**
      * When our polling determines that the checkout is completely processed, show a toast.
      * When checkout is completely processed, show a toast.

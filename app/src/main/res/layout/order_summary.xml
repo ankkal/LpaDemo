@@ -86,6 +86,19 @@
             android:id="@+id/razorpayPaymentID"
             style="@style/OrderSummaryTextView"
             android:gravity="right"/>
+
+    </TableRow>
+    <TableRow android:id="@+id/payment_row_Status">
+
+        <TextView
+            style="@style/OrderSummaryTextView"
+            android:text="@string/Status"/>
+
+        <TextView
+            android:id="@+id/razorpayPaymentStatus"
+            style="@style/OrderSummaryTextView"
+            android:gravity="right"/>
+
     </TableRow>
 
 

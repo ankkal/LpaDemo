@@ -27,6 +27,7 @@ package com.shopify.sample.activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -130,7 +131,8 @@ public class CollectionListActivity extends SampleListActivity {
             }
 
             case R.id.action_orders:
-                onOrdersClick();
+                final Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
                 return true;
 
             default:
