@@ -332,6 +332,9 @@ public class CheckoutActivity extends SampleActivity {
                         // // Response bundle contains the merchant response
                         // parameters.
                         Log.d("LOG", "Payment Transaction is successful " + inResponse.toString());
+                        findViewById(R.id.discount_row).setVisibility(View.VISIBLE);
+                        ((TextView) findViewById(R.id.razorpayPaymentID)).setText(inResponse.toString());
+                        ((TextView) findViewById(R.id.razorpayPaymentStatus)).setText("Success");
                         Toast.makeText(getApplicationContext(), "Payment Transaction is successful ", Toast.LENGTH_LONG).show();
                     }
 
@@ -344,6 +347,9 @@ public class CheckoutActivity extends SampleActivity {
                         // failure. // Response bundle contains the merchant
                         // response parameters.
                         Log.d("LOG", "Payment Transaction Failed " + inErrorMessage);
+                        findViewById(R.id.discount_row).setVisibility(View.VISIBLE);
+                        ((TextView) findViewById(R.id.razorpayPaymentID)).setText(inErrorMessage);
+                        ((TextView) findViewById(R.id.razorpayPaymentStatus)).setText("failure");
                         Toast.makeText(getBaseContext(), "Payment Transaction Failed ", Toast.LENGTH_LONG).show();
                     }
 
@@ -351,6 +357,7 @@ public class CheckoutActivity extends SampleActivity {
                     public void networkNotAvailable() { // If network is not
                         // available, then this
                         // method gets called.
+                        Toast.makeText(getBaseContext(), "networkNotAvailable ", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -362,18 +369,20 @@ public class CheckoutActivity extends SampleActivity {
                         // proper format. // 3. Server failed to authenticate
                         // that client. That is value of payt_STATUS is 2. //
                         // Error Message describes the reason for failure.
+                        Toast.makeText(getBaseContext(), "clientAuthenticationFailed ", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onErrorLoadingWebPage(int iniErrorCode,
                                                       String inErrorMessage, String inFailingUrl) {
-
+                        Toast.makeText(getBaseContext(), "onErrorLoadingWebPage ", Toast.LENGTH_LONG).show();
                     }
 
                     // had to be added: NOTE
                     @Override
                     public void onBackPressedCancelTransaction() {
                         // TODO Auto-generated method stub
+                        Toast.makeText(getBaseContext(), "onBackPressedCancelTransaction ", Toast.LENGTH_LONG).show();
                     }
 
                 });
