@@ -1,6 +1,7 @@
 package com.example.android.lpademo;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.SpannableString;
@@ -22,6 +23,16 @@ import com.amazon.identity.auth.device.authorization.api.AmazonAuthorizationMana
 import com.amazon.identity.auth.device.authorization.api.AuthorizationListener;
 import com.amazon.identity.auth.device.authorization.api.AuthzConstants;
 import com.amazon.identity.auth.device.shared.APIListener;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.lambdainvoker.LambdaFunctionException;
+import com.amazonaws.mobileconnectors.lambdainvoker.LambdaInvokerFactory;
+import com.amazonaws.regions.Regions;
+import com.digits.sdk.android.AuthCallback;
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsAuthButton;
+import com.digits.sdk.android.DigitsException;
+import com.digits.sdk.android.DigitsSession;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -48,14 +59,26 @@ import com.shopify.sample.activity.CollectionListActivity;
 import com.shopify.sample.activity.base.SampleActivity;
 import com.shopify.sample.application.SampleApplication;
 import com.shopify.sample.customer.CustomerLoginActivity;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
 
 public class LoginActivity extends SampleActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "94895TYRanylXSigurq4Y6o2T";
+    private static final String TWITTER_SECRET = "IBOPba1eVOAESsuEHxxPATP3HxvUOH8GFK2IWbA5pdVRxeHQ5k";
+    private static final String TAG = "DIGITS_SAMPLE";
     private CallbackManager mFacebookCallbackManager;
     private LoginButton mFacebookSignInButton;
     private final String LOG_TAG = LoginActivity.class.getSimpleName();
@@ -67,11 +90,55 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
     GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
     public static final String EXTRAS_PENDING_ACTIVITY_INTENT = "pending_activity_intent";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new TwitterCore(authConfig), new Digits.Builder().build());
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+        final CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                this, // get the context for the current activity
+                "us-west-2:9a3062b5-9866-4a18-a594-35c7b84200e5", // Identity Pool ID
+                Regions.US_WEST_2 // Region
+        );
+
+        DigitsAuthButton digitsButton = (DigitsAuthButton) findViewById(R.id.auth_button);
+        digitsButton.setCallback(new AuthCallback() {
+            @Override
+            public void success(DigitsSession session, String phoneNumber) {
+                TwitterAuthToken authToken = (TwitterAuthToken)session.getAuthToken();
+                String value = authToken.token + ";" + authToken.secret;
+                Map<String, String> logins = new HashMap<String, String>();
+                logins.put("www.digits.com", value);
+                // Store the data in Amazon Cognito
+                credentialsProvider.setLogins(logins);
+
+                // Send the data to Amazon Lambda
+                // 1. Setup a PhoneInfo (containing relevant information)
+                PhoneInfo ph = new PhoneInfo();
+                ph.setPhoneNumber(phoneNumber);
+                ph.setId(session.getId());
+                ph.setAccessToken(authToken.token);
+                ph.setAccessTokenSecret(authToken.secret);
+
+                // 2. Send the data to the function sendData to parse the request asynchronously
+                sendData(ph);
+                // TODO: associate the session userID with your user model
+                Toast.makeText(getApplicationContext(), "Authentication successful for "
+                        + phoneNumber, Toast.LENGTH_LONG).show();
+
+
+            }
+
+            @Override
+            public void failure(DigitsException exception) {
+                Log.d("Digits", "Sign in with Digits failure", exception);
+            }
+        });
+
         try
         {
             mAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
@@ -233,6 +300,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
             }
 
             case R.id.action_logout: {
+                Digits.clearActiveSession();
                 SampleApplication.setCustomer(null);
                 SampleApplication.getBuyClient().logoutCustomer(new Callback<Void>() {
                     @Override
@@ -458,7 +526,7 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
                 onFetchCustomerSuccess(customer);
             }
 
-             @Override
+            @Override
             public void failure(BuyClientError error) {
                 // handle error
                 Log.d("createCustomer fail", error.toString());
@@ -494,5 +562,60 @@ public class LoginActivity extends SampleActivity implements GoogleApiClient.OnC
             view.onLoginCustomerSuccess();
         }*/
     }
+
+    private void sendData(PhoneInfo phoneInfo){
+
+        Log.d(TAG, "LAMBDA: Sending Data");
+        // 1. Setup a provider to allow posting to Amazon Lambda
+        final AWSCredentialsProvider provider = new CognitoCachingCredentialsProvider(
+                this,
+                "us-west-2:9a3062b5-9866-4a18-a594-35c7b84200e5", // Identity Pool ID
+                Regions.US_WEST_2);
+
+        // 2. Setup a LambdaInvoker Factory w/ provider data
+        LambdaInvokerFactory factory = new LambdaInvokerFactory(
+                this.getApplicationContext(),
+                Regions.US_WEST_2,
+                provider);
+
+        // 3. Create an interface (see MyInterface)
+        final MyInterface myInterface = factory.build(MyInterface.class);
+
+        // 3. Send the data to the "digitsLogin" function on Amazon Lambda.
+        // Note: Make sure it is done in background, not in main thread.
+        new AsyncTask<PhoneInfo, Void, String>() {
+
+            @Override
+            protected String doInBackground(PhoneInfo... params) {
+                // invoke "echo" method. In case it fails, it will throw a
+                // LambdaFunctionException.
+                try {
+                    Log.d(TAG, "LAMBDA: Attempting to send data");
+                    return myInterface.digitsLogin(params[0]);
+                } catch (LambdaFunctionException lfe) {
+                    Log.e("amazon", "Failed to invoke echo", lfe);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                if (result == null) {
+                    Log.d(TAG, "LAMBDA: Response from request is null");
+                    return;
+                } else {
+                    Log.d(TAG, "LAMBDA: Received result");
+                    Log.d(TAG, result);
+                }
+                // Do a toast
+                Log.d(TAG, "LAMBDA: Making Toast with result");
+                Toast.makeText(LoginActivity.this, result, Toast.LENGTH_LONG).show();
+
+            }
+        }.execute(phoneInfo);
+
+    }
+
+
 
 }

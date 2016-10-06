@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 android {
     signingConfigs {
@@ -81,7 +96,14 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.0.1'
     compile files('login-with-amazon-sdk.jar')
     compile files('razorpay-android-0.13.0.jar')
-    compile 'com.citruspay.sdk:payment-sdk:4.0.1'
-    compile project(':razorpay-android-0.13.0')
+    compile 'com.amazonaws:aws-android-sdk-core:2.+'
+    compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb:2.+'
+    compile 'com.amazonaws:aws-android-sdk-lambda:2.2.+'
+    compile('com.digits.sdk.android:digits:2.0.0@aar') {
+        transitive = true;
+    }
+    compile files('libs/PGSDK_v1.0.jar')
 }
 
